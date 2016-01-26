@@ -1,0 +1,8 @@
+.gitignore
+composer.lock
+composer.json
+Dockerfile
+Makefile
+.dockerignore
+.DS_Store
+.idea
