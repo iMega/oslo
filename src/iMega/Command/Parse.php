@@ -8,30 +8,70 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Gaufrette;
+use iMega\Teleport\Parser;
+use iMega\Teleport\StorageInterface;
 
 class Parse extends Command
 {
     protected function configure()
     {
-        $this->setName('parse')
-            ->setDescription('Parse xml files')
-            ->addArgument('folder', InputArgument::REQUIRED, 'folder to xml files');
+        $this->setName('parse')->setDescription('Parse xml files');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $folder = $input->getArgument('folder');
-
-        $adapter = new Gaufrette\Adapter\Local($folder);
-        $fs = new Gaufrette\Filesystem($adapter);
-        $data = $fs->read('import.xml');
-
         $cliApp = $this->getApplication();
+        $app    = $cliApp->getName();
+        /**
+         * @var StorageInterface $storage
+         */
+        $storage = $app['storage'];
 
-        $stock = new \iMega\Teleport\Parser\Stock($data, $cliApp->getName()['dispatcher']);
+        $keyStock = $this->detectFileByType(
+            $storage,
+            Parser\Description::CLASSI
+        );
+        if (!empty($keyStock)) {
+            $stock = new Parser\Stock(
+                $storage->read($keyStock),
+                $app['dispatcher']
+            );
+            $stock->parse();
+        }
 
-        $stock->parse();
+        $keyOffer = $this->detectFileByType(
+            $storage,
+            Parser\Description::PACKAGEOFFERS
+        );
+        if (!empty($keyOffer)) {
+            $offers = new Parser\Offers(
+                $storage->read($keyOffer),
+                $app['dispatcher']
+            );
+            $offers->parse();
+        }
 
         $output->writeln('Done!');
+    }
+
+    /**
+     * @param $storage
+     * @param $type
+     *
+     * @return mixed
+     */
+    private function detectFileByType($storage, $type)
+    {
+        /**
+         * @var \Gaufrette\Filesystem $storage
+         */
+        foreach ($storage->keys() as $file) {
+            if (strpos($file, '.xml') >= 1) {
+                $res = $storage->read($file);
+                if (mb_strpos($res, $type) > 0) {
+                    return $file;
+                }
+            }
+        }
     }
 }

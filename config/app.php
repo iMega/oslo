@@ -10,7 +10,7 @@ return [
     'mount' => [
         '/' => new iMega\Teleport\MainController(),
     ],
-    'storage.path' => __DIR__ . '/../teleport',
+    'storage.path' => '/data',
     'storage.adapter' => function (Application $app) {
         return new Gaufrette\Adapter\Local($app['storage.path'], true);
     },
@@ -29,6 +29,6 @@ return [
         return new \iMega\Teleport\Buffers\Memory();
     },
     'mapper' => function (Application $app) {
-        return new iMega\Teleport\Mapper\Mysqlnd($app['db.options']);
+        return new iMega\Mapper\SqlDump($app['db.options']);
     }
 ];

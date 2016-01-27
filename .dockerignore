@@ -6,3 +6,4 @@ Makefile
 .dockerignore
 .DS_Store
 .idea
+tests
