@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+use iMega\Teleport\Subscriber\BufferSubscriber;
+use iMega\Teleport\Subscriber\PackerSubscriber;
+
+set_time_limit(0);
+
+require_once __DIR__.'/vendor/autoload.php';
+
+$options   = require_once __DIR__ . '/config/options.php';
+$appConfig = require_once __DIR__ . '/config/app.php';
+
+$app = new Silex\Application(array_merge_recursive($appConfig, $options));
+$app->register(new Gitory\PimpleCli\ServiceCommandServiceProvider());
+
+$app['dispatcher']->addSubscriber(new BufferSubscriber($app['buffer']));
+$app['dispatcher']->addSubscriber(new PackerSubscriber($app['buffer'], $app['mapper'], 9999999));
+$app['user.new.command'] = function () {
+    return new \iMega\Command\Parse();
+};
+
+$cliApp = new Symfony\Component\Console\Application($app);
+$cliApp->addCommands($app['command.resolver']->commands());
+$cliApp->run();

@@ -3,6 +3,14 @@
 use Silex\Application;
 
 return [
+    'user.agents' => array(
+        '1C+Enterprise' => '1c_enterprise',
+        'Java'          => 'java',
+    ),
+    'mount' => [
+        '/' => new iMega\Teleport\MainController(),
+    ],
+    'storage.path' => __DIR__ . '/../teleport',
     'storage.adapter' => function (Application $app) {
         return new Gaufrette\Adapter\Local($app['storage.path'], true);
     },
