@@ -56,7 +56,7 @@ build/containers/teleport_parser:
 	@touch $@
 
 discovery_parser:
-	while [ "`docker inspect -f {{.State.Running}} teleport_parser`" != "true" ]; do \
+	@while [ "`docker inspect -f {{.State.Running}} teleport_parser`" != "true" ]; do \
 		echo "wait teleport_parser"; sleep 0.3; \
 	done
 	$(eval IP := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' teleport_parser))
@@ -64,6 +64,7 @@ discovery_parser:
 
 data_dir:
 	@-mkdir -p $(CURDIR)/data/zip $(CURDIR)/data/unzip $(CURDIR)/data/storage
+	@-chmod -R 777 $(CURDIR)/data
 
 test: data_dir build/containers/teleport_fileman build/containers/teleport_parser discovery_parser build/containers/teleport_tester
 	@docker run --rm \
