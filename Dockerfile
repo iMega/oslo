@@ -1,10 +1,9 @@
-FROM alpine:3.3
+FROM imega/base-builder:1.2.0
 
-RUN apk add --update php-json && \
-    rm -rf /var/cache/apk/*
+MAINTAINER Dmitry Gavriloff <info@imega.ru>
 
-COPY . /app
+EXPOSE 873
 
-VOLUME ["/data"]
+ADD build/rootfs.tar.gz /
 
-CMD ["/app/oslo", "parse"]
+CMD ["/app/daemon.sh"]

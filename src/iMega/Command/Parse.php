@@ -15,13 +15,16 @@ class Parse extends Command
 {
     protected function configure()
     {
-        $this->setName('parse')->setDescription('Parse xml files');
+        $this->setName('parse')
+            ->setDescription('Parse xml files')
+            ->addArgument('path', InputArgument::REQUIRED, 'I need path to files');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $cliApp = $this->getApplication();
         $app    = $cliApp->getName();
+        $app['storage.path'] = $input->getArgument('path');
         /**
          * @var StorageInterface $storage
          */

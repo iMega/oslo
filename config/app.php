@@ -10,7 +10,6 @@ return [
     'mount' => [
         '/' => new iMega\Teleport\MainController(),
     ],
-    'storage.path' => '/data',
     'storage.adapter' => function (Application $app) {
         return new Gaufrette\Adapter\Local($app['storage.path'], true);
     },

@@ -2,3 +2,5 @@
 .DS_Store
 composer.lock
 vendor
+data
+build
