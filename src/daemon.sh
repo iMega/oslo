@@ -7,5 +7,5 @@ do
     UUID=`echo $(basename "$DEST")`
     /app/oslo parse $DEST
     rsync --inplace -av $DEST/dump.sql rsync://fileman:873/storage/$UUID/
-    #rm -rf $DEST
+    rm -rf $DEST
 done

@@ -71,9 +71,6 @@ test: data_dir build/containers/teleport_fileman build/containers/teleport_parse
 		-v $(CURDIR)/tests/fixtures:/data/unzip \
 		imegateleport/oslo_tester \
 		rsync --inplace -av /data/unzip/9915e49a-4de1-41aa-9d7d-c9a687ec048d rsync://parser/data
-#	@if [ ! -f "$(CURDIR)/data/unzip/9915e49a-4de1-41aa-9d7d-c9a687ec048d/import.xml" ];then \
-#		exit 1; \
-#	fi
-#	@if [ ! -f "$(CURDIR)/data/unzip/9915e49a-4de1-41aa-9d7d-c9a687ec048d/offers.xml" ];then \
-#		exit 1; \
-#	fi
+	@if [ ! -f "$(CURDIR)/data/storage/9915e49a-4de1-41aa-9d7d-c9a687ec048d/dump.sql" ];then \
+		exit 1; \
+	fi
