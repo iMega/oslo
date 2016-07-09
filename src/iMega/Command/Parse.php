@@ -17,14 +17,14 @@ class Parse extends Command
     {
         $this->setName('parse')
             ->setDescription('Parse xml files')
-            ->addArgument('path', InputArgument::REQUIRED, 'I need path to files');
+            ->addArgument('uuid', InputArgument::REQUIRED, 'I need uuid');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $cliApp = $this->getApplication();
         $app    = $cliApp->getName();
-        $app['storage.path'] = $input->getArgument('path');
+        $app['uuid'] = $input->getArgument('uuid');
         /**
          * @var StorageInterface $storage
          */

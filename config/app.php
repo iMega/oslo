@@ -3,21 +3,20 @@
 use Silex\Application;
 
 return [
-    'user.agents' => array(
-        '1C+Enterprise' => '1c_enterprise',
-        'Java'          => 'java',
-    ),
-    'mount' => [
-        '/' => new iMega\Teleport\MainController(),
-    ],
     'storage.adapter' => function (Application $app) {
-        return new Gaufrette\Adapter\Local($app['storage.path'], true);
+        return new Gaufrette\Adapter\Local('/data/' . $app['uuid'], true);
+    },
+    'storage.temp.adapter' => function (Application $app) {
+        return new Gaufrette\Adapter\Local('/tmp/' . $app['uuid'], true);
     },
     'storage' => function (Application $app) {
         $fs = new Gaufrette\Filesystem($app['storage.adapter']);
+
+        $tmpFs = new Gaufrette\Filesystem($app['storage.temp.adapter']);
         $filesystemMap = Gaufrette\StreamWrapper::getFilesystemMap();
-        $filesystemMap->set('teleport', $fs);
+        $filesystemMap->set('teleport', $tmpFs);
         Gaufrette\StreamWrapper::register();
+
         return $fs;
     },
     'resources' => function () {

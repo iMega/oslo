@@ -63,15 +63,15 @@ discovery_parser:
 	docker exec teleport_fileman sh -c 'echo -e "$(IP)\tparser" >> /etc/hosts'
 
 data_dir:
-	@-mkdir -p $(CURDIR)/data/zip $(CURDIR)/data/unzip $(CURDIR)/data/storage
+	@-mkdir -p $(CURDIR)/data/zip $(CURDIR)/data/parse $(CURDIR)/data/storage
 	@-chmod -R 777 $(CURDIR)/data
 
 test: data_dir build/containers/teleport_fileman build/containers/teleport_parser discovery_parser build/containers/teleport_tester
 	@docker run --rm \
 		--link teleport_parser:parser \
-		-v $(CURDIR)/tests/fixtures:/data/unzip \
+		-v $(CURDIR)/tests/fixtures:/data \
 		imegateleport/oslo_tester \
-		rsync --inplace -av /data/unzip/9915e49a-4de1-41aa-9d7d-c9a687ec048d rsync://parser/data
+		rsync --inplace -av /data/9915e49a-4de1-41aa-9d7d-c9a687ec048d rsync://parser/data
 	@sleep 1
 	@if [ ! -f "$(CURDIR)/data/storage/9915e49a-4de1-41aa-9d7d-c9a687ec048d/dump.sql" ];then \
 		exit 1; \
