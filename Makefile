@@ -73,6 +73,6 @@ test: data_dir build/containers/teleport_fileman build/containers/teleport_parse
 		imegateleport/oslo_tester \
 		rsync --inplace -av /data/9915e49a-4de1-41aa-9d7d-c9a687ec048d rsync://parser/data
 	@sleep 1
-	@if [ ! -f "$(CURDIR)/data/storage/9915e49a-4de1-41aa-9d7d-c9a687ec048d/dump.sql" ];then \
+	@if [ `ls data/storage/9915e49a-4de1-41aa-9d7d-c9a687ec048d/ | wc -l` != 6 ];then \
 		exit 1; \
 	fi

@@ -17,7 +17,7 @@ class SqlDump implements MapperInterface
      */
     public function __construct(array $options)
     {
-        $this->prefix  = $options['prefix'];
+        $this->prefix = $options['prefix'];
     }
 
     /**
@@ -137,6 +137,6 @@ class SqlDump implements MapperInterface
      */
     public function query($value)
     {
-        $result = file_put_contents('gaufrette://teleport/dump.sql', $value.";", FILE_APPEND);
+        $result = file_put_contents('gaufrette://teleport/'.uniqid().'.sql', $value.";", FILE_APPEND);
     }
 }

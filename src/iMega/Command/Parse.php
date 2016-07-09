@@ -7,9 +7,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use iMega\Teleport\Parser\Description;
 use Gaufrette;
-use iMega\Teleport\Parser;
-use iMega\Teleport\StorageInterface;
 
 class Parse extends Command
 {
@@ -17,64 +16,36 @@ class Parse extends Command
     {
         $this->setName('parse')
             ->setDescription('Parse xml files')
-            ->addArgument('uuid', InputArgument::REQUIRED, 'I need uuid');
+            ->addArgument('uuid', InputArgument::REQUIRED, 'I need uuid')
+            ->addArgument('file', InputArgument::REQUIRED, 'I need file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $cliApp = $this->getApplication();
         $app    = $cliApp->getName();
+
         $app['uuid'] = $input->getArgument('uuid');
-        /**
-         * @var StorageInterface $storage
-         */
-        $storage = $app['storage'];
+        $file        = $input->getArgument('file');
 
-        $keyStock = $this->detectFileByType(
-            $storage,
-            Parser\Description::CLASSI
-        );
-        if (!empty($keyStock)) {
-            $stock = new Parser\Stock(
-                $storage->read($keyStock),
-                $app['dispatcher']
-            );
-            $stock->parse();
+        $res    = $app['storage']->read($file);
+        $parser = null;
+        if (mb_strpos($res, '</'.Description::CLASSI.'>') > 0) {
+            $parser = '\\iMega\\Teleport\\Parser\\Stock';
+        } elseif (mb_strpos($res, '</'.Description::PACKAGEOFFERS.'>') > 0) {
+            $parser = '\\iMega\\Teleport\\Parser\\Offers';
+        } else {
+            $output->writeln('Fail. ' . $app['uuid'] . ' and file: ' . $file);
         }
 
-        $keyOffer = $this->detectFileByType(
-            $storage,
-            Parser\Description::PACKAGEOFFERS
-        );
-        if (!empty($keyOffer)) {
-            $offers = new Parser\Offers(
-                $storage->read($keyOffer),
-                $app['dispatcher']
-            );
-            $offers->parse();
+        if (null === $parser) {
+            $output->writeln('Fail parser.' . $app['uuid']);
+            return;
         }
 
-        $output->writeln('Done!');
-    }
+        $entity = new $parser($res, $app['dispatcher']);
+        $entity->parse();
 
-    /**
-     * @param $storage
-     * @param $type
-     *
-     * @return mixed
-     */
-    private function detectFileByType($storage, $type)
-    {
-        /**
-         * @var \Gaufrette\Filesystem $storage
-         */
-        foreach ($storage->keys() as $file) {
-            if (strpos($file, '.xml') >= 1) {
-                $res = $storage->read($file);
-                if (mb_strpos($res, $type) > 0) {
-                    return $file;
-                }
-            }
-        }
+        $output->writeln('Done!'. $app['uuid'] . ' and file: ' . $file);
     }
 }
