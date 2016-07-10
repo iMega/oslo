@@ -11,7 +11,8 @@ do
             /app/oslo parse "$UUID" "$FILE"
         ;;
         "tmp")
-            rsync --inplace -av --debug=ALL "$DEST$FILE" rsync://fileman:873/storage/"$UUID"/
+            rsync --inplace -av "$DEST$FILE" rsync://fileman:873/storage/"$UUID"/ && \
+            rm -rf $DEST$FILE
         ;;
     esac
 done
