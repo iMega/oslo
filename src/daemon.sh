@@ -1,6 +1,6 @@
 #!/bin/sh
 
-/usr/bin/rsync --no-detach --daemon --config /etc/rsyncd.conf &
+/usr/bin/rsync --no-detach -v --daemon --config /etc/rsyncd.conf &
 
 inotifywait -mr -e close_write --fromfile /app/wait-list.txt | while read DEST EVENT FILE
 do
@@ -11,7 +11,7 @@ do
             /app/oslo parse "$UUID" "$FILE"
         ;;
         "tmp")
-            rsync --inplace -av "$DEST$FILE" rsync://fileman:873/storage/"$UUID"/
+            rsync --inplace -av --debug=ALL "$DEST$FILE" rsync://fileman:873/storage/"$UUID"/
         ;;
     esac
 done
